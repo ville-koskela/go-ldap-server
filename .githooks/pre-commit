@@ -1,0 +1,10 @@
+#!/bin/sh
+# Run gofmt on all staged .go files
+FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.go$')
+if [ -n "$FILES" ]; then
+  echo "Running gofmt..."
+  for FILE in $FILES; do
+    gofmt -w $FILE
+    git add $FILE
+  done
+fi
