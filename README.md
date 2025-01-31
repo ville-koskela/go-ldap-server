@@ -14,3 +14,7 @@ You can add `.githooks` directory to your hooks path by running command:
 ```
 git config core.hooksPath .githooks
 ```
+
+## Formatting the code
+
+To format the code after making changes, run `gofmt -w .` in the project root.
