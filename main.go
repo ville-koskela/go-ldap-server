@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/ville-koskela/go-ldap-server/adapters/database"
+	"github.com/ville-koskela/go-ldap-server/adapters/password"
 	"github.com/ville-koskela/go-ldap-server/domain"
 	"github.com/ville-koskela/go-ldap-server/ldaphandle"
 	ldap "github.com/vjeantet/ldapserver"
@@ -19,7 +20,8 @@ import (
 func main() {
 
 	db, _ := database.InitializeDatabase()
-	uc := domain.NewUseCases(db)
+	pw := password.Password
+	uc := domain.NewUseCases(db, pw)
 
 	//ldap logger
 	ldap.Logger = log.New(os.Stdout, "[server] ", log.LstdFlags)

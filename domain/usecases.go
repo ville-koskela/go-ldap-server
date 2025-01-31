@@ -5,10 +5,16 @@ type Database interface {
 	FindUserByName(username string) (User, error)
 }
 
-type UseCases struct {
-	db Database
+type Password interface {
+	HashPassword(password string) (string, error)
+	ComparePassword(hashedPassword string, password string) bool
 }
 
-func NewUseCases(db Database) *UseCases {
-	return &UseCases{db: db}
+type UseCases struct {
+	db Database
+	pw Password
+}
+
+func NewUseCases(db Database, pw Password) *UseCases {
+	return &UseCases{db: db, pw: pw}
 }
