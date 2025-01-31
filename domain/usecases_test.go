@@ -1,71 +1,76 @@
-package domain_test
+package domain
 
 import (
 	"errors"
 	"testing"
 
-	"github.com/ville-koskela/go-ldap-server/domain"
 	"github.com/ville-koskela/go-ldap-server/test"
 )
 
-type MockDatabase struct {
-	users map[string]domain.User
-}
-
-func (m *MockDatabase) AddUser(user domain.User) error {
-	if _, exists := m.users[user.Username]; exists {
-		return errors.New("user already exists")
-	}
-	m.users[user.Username] = user
-	return nil
-}
-
-func (m *MockDatabase) FindUserByName(username string) (domain.User, error) {
-	user, exists := m.users[username]
-	if !exists {
-		return domain.User{}, errors.New("user not found")
-	}
-	return user, nil
-}
-
-func NewMockDatabase() *MockDatabase {
-	return &MockDatabase{users: make(map[string]domain.User)}
-}
+/**
+ * Tests for domain
+ */
 
 func TestAuthenticateUser(t *testing.T) {
 	mockDB := NewMockDatabase()
-	useCases := domain.NewUseCases(mockDB)
+	useCases := NewUseCases(mockDB)
 
-	user := domain.User{Username: "testuser", Password: "password"}
-	mockDB.AddUser(user)
+	mockDB.setFindUserByNameResult(User{Username: "testuser", Password: "password"}, nil)
 
 	authenticated := useCases.AuthenticateUser("testuser", "password")
 	test.Assert(t, true, authenticated)
+
+	mockDB.setFindUserByNameResult(User{}, errors.New("user not found"))
+
+	authenticated = useCases.AuthenticateUser("nonexistinguser", "password")
+	test.Assert(t, false, authenticated)
 }
 
-/*
 func TestAddUser(t *testing.T) {
-    mockDB := NewMockDatabase()
-    useCases := domain.NewUseCases(mockDB)
+	mockDB := NewMockDatabase()
+	useCases := NewUseCases(mockDB)
 
-    user := domain.User{Username: "newuser", Password: "newpassword"}
-    err := useCases.AddUser(user)
-    test.Assert(t, nil, err)
+	mockDB.setAddUserError(nil)
 
-    storedUser, err := mockDB.FindUserByName("newuser")
-    test.Assert(t, nil, err)
-    test.Assert(t, user, storedUser)
+	err := useCases.AddUser(User{Username: "newuser", Password: "password"})
+	test.Assert(t, nil, err)
+
+	mockDB.setAddUserError(errors.New("error adding user"))
+
+	err = useCases.AddUser(User{Username: "newuser", Password: "password"})
+	test.Assert(t, errors.New("error adding user"), err)
 }
 
-func TestFindUserByName(t *testing.T) {
-    mockDB := NewMockDatabase()
-    useCases := domain.NewUseCases(mockDB)
-
-    user := domain.User{Username: "existinguser", Password: "password"}
-    mockDB.AddUser(user)
-
-    foundUser, err := useCases.FindUserByName("existinguser")
-    test.Assert(t, nil, err)
-    test.Assert(t, user, foundUser)
+/**
+ * Mock the database for domain
+ */
+type MockDatabase struct {
+	addUserError   error
+	findUserResult User
+	findUserError  error
 }
-*/
+
+func (m *MockDatabase) setAddUserError(err error) {
+	m.addUserError = err
+}
+
+func (m *MockDatabase) AddUser(user User) error {
+	return m.addUserError
+}
+
+func (m *MockDatabase) setFindUserByNameResult(user User, err error) {
+	m.findUserResult = user
+	m.findUserError = err
+}
+
+func (m *MockDatabase) FindUserByName(username string) (User, error) {
+	return m.findUserResult, m.findUserError
+}
+
+func NewMockDatabase() *MockDatabase {
+	return &MockDatabase{
+		addUserError:   nil,
+		findUserResult: User{},
+		findUserError:  nil,
+	}
+}
