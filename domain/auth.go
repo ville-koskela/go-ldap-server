@@ -1,14 +1,14 @@
 package domain
 
-func (uc *UseCases) AuthenticateUser(username string, password string) (bool, error) {
+func (uc *UseCases) AuthenticateUser(username string, password string) bool {
 	user, err := uc.db.FindUserByName(username)
 	if err != nil {
-		return false, err
+		return false
 	}
 
 	if user.Password == password {
-		return true, nil
+		return true
 	} else {
-		return false, nil
+		return false
 	}
 }

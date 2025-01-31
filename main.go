@@ -28,7 +28,7 @@ func main() {
 	server := ldap.NewServer()
 
 	routes := ldap.NewRouteMux()
-	routes.Bind(ldaphandle.HandleBind(uc))
+	routes.Bind(ldaphandle.HandleBind(uc.AuthenticateUser))
 	server.Handle(routes)
 
 	// listen on 10389
