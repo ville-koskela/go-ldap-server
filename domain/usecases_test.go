@@ -13,7 +13,8 @@ import (
 
 func TestAuthenticateUser(t *testing.T) {
 	mockDB := NewMockDatabase()
-	useCases := NewUseCases(mockDB)
+	mockPasswordTool := NewMockPasswordTool()
+	useCases := NewUseCases(mockDB, mockPasswordTool)
 
 	mockDB.setFindUserByNameResult(User{Username: "testuser", Password: "password"}, nil)
 
@@ -28,7 +29,8 @@ func TestAuthenticateUser(t *testing.T) {
 
 func TestAddUser(t *testing.T) {
 	mockDB := NewMockDatabase()
-	useCases := NewUseCases(mockDB)
+	mockPasswordTool := NewMockPasswordTool()
+	useCases := NewUseCases(mockDB, mockPasswordTool)
 
 	mockDB.setAddUserError(nil)
 
@@ -73,4 +75,28 @@ func NewMockDatabase() *MockDatabase {
 		findUserResult: User{},
 		findUserError:  nil,
 	}
+}
+
+type MockPasswordTool struct{}
+
+func (m *MockPasswordTool) HashPassword(password string) (string, error) {
+	hashedPassword := ""
+	for _, char := range password {
+		hashedPassword = string(char) + hashedPassword
+	}
+	return hashedPassword, nil
+}
+
+func (m *MockPasswordTool) ComparePassword(hashedPassword string, password string) bool {
+	comparablePassword, err := m.HashPassword(password)
+
+	if err != nil {
+		return false
+	}
+
+	return hashedPassword == comparablePassword
+}
+
+func NewMockPasswordTool() *MockPasswordTool {
+	return &MockPasswordTool{}
 }

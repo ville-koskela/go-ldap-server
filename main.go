@@ -20,7 +20,7 @@ import (
 func main() {
 
 	db, _ := database.InitializeDatabase()
-	pw := password.Password
+	pw := password.PasswordTool
 	uc := domain.NewUseCases(db, pw)
 
 	//ldap logger
