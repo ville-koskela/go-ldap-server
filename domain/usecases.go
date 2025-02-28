@@ -1,8 +1,16 @@
 package domain
 
-type UserRepository interface {
+type UserReader interface {
 	FindUserByUsername(username string) (User, error)
+}
+
+type UserWriter interface {
 	AddUser(user User) error
+}
+
+type UserRepository interface {
+	UserReader
+	UserWriter
 }
 
 type PasswordHasher interface {
