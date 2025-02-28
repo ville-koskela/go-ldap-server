@@ -16,15 +16,15 @@ func TestAuthenticateUser(t *testing.T) {
 	mockPasswordTool := NewMockPasswordTool()
 	useCases := NewUseCases(mockDB, mockPasswordTool)
 
-	mockDB.setFindUserByNameResult(User{Username: "testuser", Password: "password"}, nil)
+	mockDB.setFindUserByNameResult(User{Username: "testuser", Password: "drowssap"}, nil)
 
 	authenticated := useCases.AuthenticateUser("testuser", "password")
-	test.Assert(t, true, authenticated)
+	test.Assert(t, true, authenticated, "User should be authenticated")
 
 	mockDB.setFindUserByNameResult(User{}, errors.New("user not found"))
 
 	authenticated = useCases.AuthenticateUser("nonexistinguser", "password")
-	test.Assert(t, false, authenticated)
+	test.Assert(t, false, authenticated, "User should not be authenticated")
 }
 
 func TestAddUser(t *testing.T) {
@@ -35,12 +35,12 @@ func TestAddUser(t *testing.T) {
 	mockDB.setAddUserError(nil)
 
 	err := useCases.AddUser(User{Username: "newuser", Password: "password"})
-	test.Assert(t, nil, err)
+	test.Assert(t, nil, err, "User should be added")
 
 	mockDB.setAddUserError(errors.New("error adding user"))
 
 	err = useCases.AddUser(User{Username: "newuser", Password: "password"})
-	test.Assert(t, errors.New("error adding user"), err)
+	test.Assert(t, errors.New("error adding user"), err, "User should not be added")
 }
 
 /**

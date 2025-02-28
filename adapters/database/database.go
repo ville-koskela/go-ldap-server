@@ -5,7 +5,7 @@ import (
 )
 
 type Database interface {
-	domain.Database
+	domain.UserRepository
 	Close() error
 }
 
