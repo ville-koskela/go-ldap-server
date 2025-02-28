@@ -12,32 +12,32 @@ import (
  */
 
 func TestAuthenticateUser(t *testing.T) {
-	mockDB := NewMockDatabase()
-	mockPasswordTool := NewMockPasswordTool()
-	useCases := NewUseCases(mockDB, mockPasswordTool)
+	mockUserRepository := NewMockUserRepository()
+	mockPasswordManager := NewMockPasswordManager()
+	useCases := NewUseCases(mockUserRepository, mockPasswordManager)
 
-	mockDB.setFindUserByNameResult(User{Username: "testuser", Password: "drowssap"}, nil)
+	mockUserRepository.setFindUserByUsernameResult(User{Username: "testuser", Password: "drowssap"}, nil)
 
 	authenticated := useCases.AuthenticateUser("testuser", "password")
 	test.Assert(t, true, authenticated, "User should be authenticated")
 
-	mockDB.setFindUserByNameResult(User{}, errors.New("user not found"))
+	mockUserRepository.setFindUserByUsernameResult(User{}, errors.New("user not found"))
 
 	authenticated = useCases.AuthenticateUser("nonexistinguser", "password")
 	test.Assert(t, false, authenticated, "User should not be authenticated")
 }
 
 func TestAddUser(t *testing.T) {
-	mockDB := NewMockDatabase()
-	mockPasswordTool := NewMockPasswordTool()
-	useCases := NewUseCases(mockDB, mockPasswordTool)
+	mockUserRepository := NewMockUserRepository()
+	mockPasswordManager := NewMockPasswordManager()
+	useCases := NewUseCases(mockUserRepository, mockPasswordManager)
 
-	mockDB.setAddUserError(nil)
+	mockUserRepository.setAddUserError(nil)
 
 	err := useCases.AddUser(User{Username: "newuser", Password: "password"})
 	test.Assert(t, nil, err, "User should be added")
 
-	mockDB.setAddUserError(errors.New("error adding user"))
+	mockUserRepository.setAddUserError(errors.New("error adding user"))
 
 	err = useCases.AddUser(User{Username: "newuser", Password: "password"})
 	test.Assert(t, errors.New("error adding user"), err, "User should not be added")
@@ -46,40 +46,40 @@ func TestAddUser(t *testing.T) {
 /**
  * Mock the database for domain
  */
-type MockDatabase struct {
+type MockUserRepository struct {
 	addUserError   error
 	findUserResult User
 	findUserError  error
 }
 
-func (m *MockDatabase) setAddUserError(err error) {
+func (m *MockUserRepository) setAddUserError(err error) {
 	m.addUserError = err
 }
 
-func (m *MockDatabase) AddUser(user User) error {
+func (m *MockUserRepository) AddUser(user User) error {
 	return m.addUserError
 }
 
-func (m *MockDatabase) setFindUserByNameResult(user User, err error) {
+func (m *MockUserRepository) setFindUserByUsernameResult(user User, err error) {
 	m.findUserResult = user
 	m.findUserError = err
 }
 
-func (m *MockDatabase) FindUserByName(username string) (User, error) {
+func (m *MockUserRepository) FindUserByUsername(username string) (User, error) {
 	return m.findUserResult, m.findUserError
 }
 
-func NewMockDatabase() *MockDatabase {
-	return &MockDatabase{
+func NewMockUserRepository() *MockUserRepository {
+	return &MockUserRepository{
 		addUserError:   nil,
 		findUserResult: User{},
 		findUserError:  nil,
 	}
 }
 
-type MockPasswordTool struct{}
+type MockPasswordManager struct{}
 
-func (m *MockPasswordTool) HashPassword(password string) (string, error) {
+func (m *MockPasswordManager) HashPassword(password string) (string, error) {
 	hashedPassword := ""
 	for _, char := range password {
 		hashedPassword = string(char) + hashedPassword
@@ -87,7 +87,7 @@ func (m *MockPasswordTool) HashPassword(password string) (string, error) {
 	return hashedPassword, nil
 }
 
-func (m *MockPasswordTool) ComparePassword(hashedPassword string, password string) bool {
+func (m *MockPasswordManager) ComparePassword(hashedPassword string, password string) bool {
 	comparablePassword, err := m.HashPassword(password)
 
 	if err != nil {
@@ -97,6 +97,6 @@ func (m *MockPasswordTool) ComparePassword(hashedPassword string, password strin
 	return hashedPassword == comparablePassword
 }
 
-func NewMockPasswordTool() *MockPasswordTool {
-	return &MockPasswordTool{}
+func NewMockPasswordManager() *MockPasswordManager {
+	return &MockPasswordManager{}
 }

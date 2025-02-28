@@ -1,7 +1,7 @@
 package domain
 
 type UserRepository interface {
-	FindUserByName(username string) (User, error)
+	FindUserByUsername(username string) (User, error)
 	AddUser(user User) error
 }
 

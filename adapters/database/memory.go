@@ -33,7 +33,7 @@ func (db *InMemoryDatabase) AddUser(user domain.User) error {
 	return nil
 }
 
-func (db *InMemoryDatabase) FindUserByName(username string) (domain.User, error) {
+func (db *InMemoryDatabase) FindUserByUsername(username string) (domain.User, error) {
 	user, ok := db.users[username]
 	if !ok {
 		return domain.User{}, errors.New("user not found")
