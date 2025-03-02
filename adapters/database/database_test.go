@@ -7,7 +7,7 @@ import (
 	"github.com/ville-koskela/go-ldap-server/test"
 )
 
-var dbTypes = []string{"inmemory"}
+var dbTypes = []string{"inmemory", "sqlite3"}
 
 func TestDatabase_AddUser(t *testing.T) {
 	for _, dbType := range dbTypes {

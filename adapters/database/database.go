@@ -13,6 +13,8 @@ func InitializeDatabase(dbType string) (Database, error) {
 	switch dbType {
 	case "inmemory":
 		return NewInMemoryDatabase(), nil
+	case "sqlite", "sqlite3":
+		return NewSQLite3Database(":memory:")
 	default:
 		panic("Unknown database type")
 	}
