@@ -23,6 +23,16 @@ func main() {
 	pw := password.PasswordTool
 	uc := domain.NewUseCases(db, pw)
 
+	// add default user
+	uc.AddUser(domain.User{
+		Username: "test",
+		Password: "test",
+		Email:    "default@example.com",
+		FullName: "Default User",
+		UID:      1000,
+		GID:      1000,
+	})
+
 	//ldap logger
 	ldap.Logger = log.New(os.Stdout, "[server] ", log.LstdFlags)
 

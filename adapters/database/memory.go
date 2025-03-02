@@ -14,17 +14,6 @@ func NewInMemoryDatabase() *InMemoryDatabase {
 	db := &InMemoryDatabase{
 		users: make(map[string]domain.User),
 	}
-
-	defaultUser := domain.User{
-		Username: "test",
-		Password: "test",
-		Email:    "default@example.com",
-		FullName: "Default User",
-		UID:      10000,
-		GID:      10000,
-	}
-	db.AddUser(defaultUser)
-
 	return db
 }
 
