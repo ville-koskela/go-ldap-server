@@ -56,8 +56,8 @@ func (m *MockUserRepository) setAddUserError(err error) {
 	m.addUserError = err
 }
 
-func (m *MockUserRepository) AddUser(user User) error {
-	return m.addUserError
+func (m *MockUserRepository) AddUser(user User) (User, error) {
+	return user, m.addUserError
 }
 
 func (m *MockUserRepository) setFindUserByUsernameResult(user User, err error) {

@@ -8,5 +8,7 @@ func (uc *UseCases) AddUser(user User) error {
 
 	user.Password = hash
 
-	return uc.repo.AddUser(user)
+	_, err = uc.repo.AddUser(user)
+
+	return err
 }

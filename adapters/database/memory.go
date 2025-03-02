@@ -28,9 +28,9 @@ func NewInMemoryDatabase() *InMemoryDatabase {
 	return db
 }
 
-func (db *InMemoryDatabase) AddUser(user domain.User) error {
+func (db *InMemoryDatabase) AddUser(user domain.User) (domain.User, error) {
 	db.users[user.Username] = user
-	return nil
+	return db.users[user.Username], nil
 }
 
 func (db *InMemoryDatabase) FindUserByUsername(username string) (domain.User, error) {

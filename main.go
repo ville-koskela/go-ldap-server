@@ -19,7 +19,7 @@ import (
  */
 func main() {
 
-	db, _ := database.InitializeDatabase()
+	db, _ := database.InitializeDatabase("inmemory")
 	pw := password.PasswordTool
 	uc := domain.NewUseCases(db, pw)
 

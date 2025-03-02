@@ -9,6 +9,11 @@ type Database interface {
 	Close() error
 }
 
-func InitializeDatabase() (Database, error) {
-	return NewInMemoryDatabase(), nil
+func InitializeDatabase(dbType string) (Database, error) {
+	switch dbType {
+	case "inmemory":
+		return NewInMemoryDatabase(), nil
+	default:
+		panic("Unknown database type")
+	}
 }
