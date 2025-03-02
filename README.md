@@ -36,6 +36,12 @@ Test ldapsearch with:
 ldapsearch -x -H ldap://127.0.0.1:10389 -D "test" -w "test2"
 ```
 
+Bind to the LDAP server with:
+
+```
+ldapwhoami -x -H ldap://127.0.0.1:10389 -D "test" -w "test2"
+```
+
 ## Formatting the code
 
 To format the code after making changes, run `gofmt -w .` in the project root.
