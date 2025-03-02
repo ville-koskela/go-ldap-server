@@ -15,6 +15,10 @@ You can add `.githooks` directory to your hooks path by running command:
 git config core.hooksPath .githooks
 ```
 
+## Formatting the code
+
+To format the code after making changes, run `gofmt -w .` in the project root.
+
 ## Running tests
 
 To run tests, simply run:
@@ -42,6 +46,11 @@ Bind to the LDAP server with:
 ldapwhoami -x -H ldap://127.0.0.1:10389 -D "test" -w "test2"
 ```
 
-## Formatting the code
+## Configuring the app
 
-To format the code after making changes, run `gofmt -w .` in the project root.
+App can be configured using env-variables. Currently supported variables are:
+
+| Variable name | Default   | Variable description                                                     |
+| ------------- | --------- | ------------------------------------------------------------------------ |
+| LDAP_PORT     | `10389`   | Defines the port the ldap server binds to and starts listening requests. |
+| DB_TYPE       | `sqlite3` | Defines the database type used for storing data.                         |
