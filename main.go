@@ -4,9 +4,11 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	"github.com/ville-koskela/go-ldap-server/adapters/database"
+	environment "github.com/ville-koskela/go-ldap-server/adapters/env"
 	"github.com/ville-koskela/go-ldap-server/adapters/password"
 	"github.com/ville-koskela/go-ldap-server/domain"
 	"github.com/ville-koskela/go-ldap-server/ldaphandle"
@@ -19,7 +21,8 @@ import (
  */
 func main() {
 
-	db, _ := database.InitializeDatabase("sqlite3")
+	env := environment.NewEnv()
+	db, _ := database.InitializeDatabase(env.GetDbType())
 	pw := password.PasswordTool
 	uc := domain.NewUseCases(db, pw)
 
@@ -44,7 +47,7 @@ func main() {
 	server.Handle(routes)
 
 	// listen on 10389
-	go server.ListenAndServe("127.0.0.1:10389")
+	go server.ListenAndServe("127.0.0.1:" + strconv.Itoa(env.GetLdapPort()))
 
 	// When CTRL+C, SIGINT and SIGTERM signal occurs
 	// Then stop server gracefully
