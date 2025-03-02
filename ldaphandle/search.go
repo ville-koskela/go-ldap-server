@@ -5,6 +5,9 @@ import (
 
 	"github.com/ville-koskela/go-ldap-server/domain"
 
+	"fmt"
+
+	ldapMessage "github.com/lor00x/goldap/message"
 	ldap "github.com/vjeantet/ldapserver"
 )
 
@@ -24,6 +27,8 @@ func HandleSearch(listUsers ListUsersFunc) ldap.HandlerFunc {
 
 		for _, user := range users {
 			entry := ldap.NewSearchResultEntry("cn=" + user.Username + "," + string(r.BaseObject()))
+			entry.AddAttribute("uid", ldapMessage.AttributeValue(user.Username))
+			entry.AddAttribute("uidNumber", ldapMessage.AttributeValue(fmt.Sprint(user.UID)))
 			//entry.AddAttribute("uid", user.Username)
 			//entry.AddAttribute("uidNumber", user.UID)
 			//entry.AddAttribute("gidNumber", user.GID)
