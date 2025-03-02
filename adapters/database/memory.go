@@ -30,6 +30,14 @@ func (db *InMemoryDatabase) FindUserByUsername(username string) (domain.User, er
 	return user, nil
 }
 
+func (db *InMemoryDatabase) ListUsers() ([]domain.User, error) {
+	users := make([]domain.User, 0, len(db.users))
+	for _, user := range db.users {
+		users = append(users, user)
+	}
+	return users, nil
+}
+
 func (db *InMemoryDatabase) Close() error {
 	return nil
 }

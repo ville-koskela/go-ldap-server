@@ -59,6 +59,29 @@ func (db *SQLite3Database) FindUserByUsername(username string) (domain.User, err
 	return user, nil
 }
 
+func (db *SQLite3Database) ListUsers() ([]domain.User, error) {
+	db.mu.Lock()
+	defer db.mu.Unlock()
+
+	rows, err := db.db.Query("SELECT username, password, email, full_name, uid, gid FROM users")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := make([]domain.User, 0)
+	for rows.Next() {
+		var user domain.User
+		err := rows.Scan(&user.Username, &user.Password, &user.Email, &user.FullName, &user.UID, &user.GID)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
+}
+
 func (db *SQLite3Database) Close() error {
 	return db.db.Close()
 }

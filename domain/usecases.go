@@ -11,6 +11,7 @@ type UserWriter interface {
 type UserRepository interface {
 	UserReader
 	UserWriter
+	ListUsers() ([]User, error)
 }
 
 type PasswordHasher interface {

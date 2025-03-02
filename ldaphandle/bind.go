@@ -6,10 +6,6 @@ import (
 	ldap "github.com/vjeantet/ldapserver"
 )
 
-type UseCases interface {
-	AuthenticateUser(username, password string) (bool, error)
-}
-
 type AuthenticateUserFunc func(username string, password string) bool
 
 func HandleBind(authFunc AuthenticateUserFunc) ldap.HandlerFunc {

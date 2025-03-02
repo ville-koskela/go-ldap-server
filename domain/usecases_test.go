@@ -43,6 +43,22 @@ func TestAddUser(t *testing.T) {
 	test.Assert(t, errors.New("error adding user"), err, "User should not be added")
 }
 
+func TestListUsers(t *testing.T) {
+	mockUserRepository := NewMockUserRepository()
+	userCases := NewUseCases(mockUserRepository, nil)
+
+	mockUserRepository.setListUsersResult([]User{
+		{Username: "user1", Password: "password1"},
+		{Username: "user2", Password: "password2"},
+	}, nil)
+
+	users, err := userCases.ListUsers()
+	test.Assert(t, nil, err, "Users should be listed")
+	test.Assert(t, 2, len(users), "There should be 2 users")
+	test.Assert(t, "user1", users[0].Username, "First user should be user1")
+	test.Assert(t, "user2", users[1].Username, "Second user should be user2")
+}
+
 /**
  * Mock the database for domain
  */
@@ -50,6 +66,8 @@ type MockUserRepository struct {
 	addUserError   error
 	findUserResult User
 	findUserError  error
+	listUserError  error
+	listUserResult []User
 }
 
 func (m *MockUserRepository) setAddUserError(err error) {
@@ -67,6 +85,15 @@ func (m *MockUserRepository) setFindUserByUsernameResult(user User, err error) {
 
 func (m *MockUserRepository) FindUserByUsername(username string) (User, error) {
 	return m.findUserResult, m.findUserError
+}
+
+func (m *MockUserRepository) setListUsersResult(users []User, err error) {
+	m.listUserResult = users
+	m.listUserError = err
+}
+
+func (m *MockUserRepository) ListUsers() ([]User, error) {
+	return m.listUserResult, m.listUserError
 }
 
 func NewMockUserRepository() *MockUserRepository {

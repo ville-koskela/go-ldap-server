@@ -44,6 +44,7 @@ func main() {
 
 	routes := ldap.NewRouteMux()
 	routes.Bind(ldaphandle.HandleBind(uc.AuthenticateUser))
+	routes.Search(ldaphandle.HandleSearch(uc.ListUsers))
 	server.Handle(routes)
 
 	// listen on 10389
@@ -56,5 +57,6 @@ func main() {
 	<-ch
 	close(ch)
 
+	db.Close()
 	server.Stop()
 }
