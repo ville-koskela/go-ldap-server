@@ -1,11 +1,11 @@
 package ldaphandle
 
 import (
+	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/ville-koskela/go-ldap-server/domain"
-
-	"fmt"
 
 	ldapMessage "github.com/lor00x/goldap/message"
 	ldap "github.com/vjeantet/ldapserver"
@@ -29,11 +29,9 @@ func HandleSearch(listUsers ListUsersFunc) ldap.HandlerFunc {
 			entry := ldap.NewSearchResultEntry("cn=" + user.Username + "," + string(r.BaseObject()))
 			entry.AddAttribute("uid", ldapMessage.AttributeValue(user.Username))
 			entry.AddAttribute("uidNumber", ldapMessage.AttributeValue(fmt.Sprint(user.UID)))
-			//entry.AddAttribute("uid", user.Username)
-			//entry.AddAttribute("uidNumber", user.UID)
-			//entry.AddAttribute("gidNumber", user.GID)
-			//entry.AddAttribute("homeDirectory", "/home/" + user.Username)
-			//entry.AddAttribute("loginShell", "/bin/bash")
+			entry.AddAttribute("gidNumber", ldapMessage.AttributeValue(strconv.Itoa(user.GID)))
+			entry.AddAttribute("homeDirectory", ldapMessage.AttributeValue("/home/"+user.Username))
+			entry.AddAttribute("loginShell", "/bin/bash")
 			w.Write(entry)
 		}
 

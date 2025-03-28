@@ -45,9 +45,9 @@ func main() {
 	routes := ldap.NewRouteMux()
 	routes.Bind(ldaphandle.HandleBind(uc.AuthenticateUser))
 	routes.Search(ldaphandle.HandleSearch(uc.ListUsers))
+	routes.Extended(ldaphandle.HandleWhoami()).RequestName(ldap.NoticeOfWhoAmI).Label("Ext - Who Am I")
 	server.Handle(routes)
 
-	// listen on 10389
 	go server.ListenAndServe("127.0.0.1:" + strconv.Itoa(env.GetLdapPort()))
 
 	// When CTRL+C, SIGINT and SIGTERM signal occurs

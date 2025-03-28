@@ -14,12 +14,17 @@ func HandleBind(authFunc AuthenticateUserFunc) ldap.HandlerFunc {
 		r := m.GetBindRequest()
 		res := ldap.NewBindResponse(ldap.LDAPResultSuccess)
 
-		log.Printf("Bind User=%s, Pass=%s", string(r.Name()), string(r.AuthenticationSimple()))
+		user := string(r.Name())
+		pass := string(r.AuthenticationSimple())
 
-		success := authFunc(string(r.Name()), string(r.AuthenticationSimple()))
+		// @TODO: Don't print password in logs
+		log.Printf("Bind User=%s, Pass=%s", user, pass)
+
+		success := authFunc(user, pass)
 
 		if success {
 			w.Write(res)
+			return
 		}
 
 		log.Printf("Bind failed User=%s", string(r.Name()))
