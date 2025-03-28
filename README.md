@@ -40,6 +40,12 @@ Test ldapsearch with:
 ldapsearch -x -H ldap://127.0.0.1:10389 -D "test" -w "test2"
 ```
 
+You can also try searching without binding:
+
+```
+ldapsearch -H ldap://127.0.0.1:10389 -x -b "dc=example,dc=org" "(objectClass=*)"
+```
+
 Bind to the LDAP server with:
 
 ```

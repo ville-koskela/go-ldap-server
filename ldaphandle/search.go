@@ -1,9 +1,9 @@
 package ldaphandle
 
 import (
-	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/ville-koskela/go-ldap-server/domain"
 
@@ -27,11 +27,23 @@ func HandleSearch(listUsers ListUsersFunc) ldap.HandlerFunc {
 
 		for _, user := range users {
 			entry := ldap.NewSearchResultEntry("cn=" + user.Username + "," + string(r.BaseObject()))
+
+			entry.AddAttribute("objectClass", "posixAccount", "shadowAccount", "inetOrgPerson")
+			entry.AddAttribute("cn", ldapMessage.AttributeValue(user.Username))
 			entry.AddAttribute("uid", ldapMessage.AttributeValue(user.Username))
-			entry.AddAttribute("uidNumber", ldapMessage.AttributeValue(fmt.Sprint(user.UID)))
+			entry.AddAttribute("sn", ldapMessage.AttributeValue(user.FullName))
+			entry.AddAttribute("mail", ldapMessage.AttributeValue(user.Email))
+			entry.AddAttribute("uidNumber", ldapMessage.AttributeValue(strconv.Itoa(user.UID)))
 			entry.AddAttribute("gidNumber", ldapMessage.AttributeValue(strconv.Itoa(user.GID)))
 			entry.AddAttribute("homeDirectory", ldapMessage.AttributeValue("/home/"+user.Username))
 			entry.AddAttribute("loginShell", "/bin/bash")
+
+			// @TODO: We probably want to keep track of password age?
+			shadowLastChange := int(time.Now().Unix() / 86400)
+			entry.AddAttribute("shadowLastChange", ldapMessage.AttributeValue(strconv.Itoa(shadowLastChange)))
+			entry.AddAttribute("shadowMax", ldapMessage.AttributeValue("99999"))
+			entry.AddAttribute("shadowWarning", ldapMessage.AttributeValue("7"))
+
 			w.Write(entry)
 		}
 

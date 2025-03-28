@@ -12,23 +12,31 @@ func HandleBind(authFunc AuthenticateUserFunc) ldap.HandlerFunc {
 
 	return func(w ldap.ResponseWriter, m *ldap.Message) {
 		r := m.GetBindRequest()
-		res := ldap.NewBindResponse(ldap.LDAPResultSuccess)
 
-		user := string(r.Name())
-		pass := string(r.AuthenticationSimple())
+		dn := string(r.Name())
+		pw := string(r.AuthenticationSimple())
 
 		// @TODO: Don't print password in logs
-		log.Printf("Bind User=%s, Pass=%s", user, pass)
+		log.Printf("Bind User=%s, Pass=%s", dn, pw)
 
-		success := authFunc(user, pass)
-
-		if success {
+		if dn == "" {
+			log.Printf("Anonymous bind accepted")
+			res := ldap.NewBindResponse(ldap.LDAPResultSuccess)
 			w.Write(res)
 			return
 		}
 
-		log.Printf("Bind failed User=%s", string(r.Name()))
-		res.SetResultCode(ldap.LDAPResultInvalidCredentials)
+		success := authFunc(dn, pw)
+
+		if success {
+			log.Printf("Authenticated bind for DN: %s", dn)
+			res := ldap.NewBindResponse(ldap.LDAPResultSuccess)
+			w.Write(res)
+			return
+		}
+
+		log.Printf("Bind failed for DN: %s", dn)
+		res := ldap.NewBindResponse(ldap.LDAPResultInvalidCredentials)
 		res.SetDiagnosticMessage("invalid credentials")
 		w.Write(res)
 
